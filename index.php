@@ -9,53 +9,54 @@ $webContent = new WebContent('El tiempo');
 $curlCall = new Curl();
 $curlCall->setMethod('GET');
 
+// Primera ventana.
 if (empty($_POST) === true) :
     $curlCall->setUrl('https://www.el-tiempo.net/api/json/v2/provincias');
     $allData = $curlCall->retrieveData();
-    ?>
-<h1>Seleccione una provincia</h1>
-<form action="#" method="POST">
-    <?php
-        $hiddenProvinceSelection = new Hidden();
-        $hiddenProvinceSelection->setName('seleccionProvincia');
-        $hiddenProvinceSelection->setValue('1');
-        $hiddenProvinceSelection->build();
 
-        $provinceOptions = [];
-        foreach ($allData as $k => $lineData) {
-            if ($k === 'provincias') {
-                foreach ($lineData as $provinceInfo) {
-                    $provinceOptions[] = [$provinceInfo->CODPROV => $provinceInfo->NOMBRE_PROVINCIA];
-                }
+    $webContent->setContent('<h1>Seleccione una provincia</h1>');
+    $webContent->setContent('<form action="#" method="POST">');
+    $hiddenProvinceSelection = new Hidden();
+    $hiddenProvinceSelection->setName('seleccionProvincia');
+    $hiddenProvinceSelection->setValue('1');
+    $webContent->setContent($hiddenProvinceSelection->build(true));
+
+    $provinceOptions = [];
+    foreach ($allData as $k => $lineData) {
+        if ($k === 'provincias') {
+            foreach ($lineData as $provinceInfo) {
+                $provinceOptions[] = [$provinceInfo->CODPROV => $provinceInfo->NOMBRE_PROVINCIA];
             }
         }
+    }
 
-        $selectProvinceSelection = new Select($provinceOptions);
-        $selectProvinceSelection->setName('listaProvincias');
-        $selectProvinceSelection->setOnChange('this.form.submit()');
-        $selectProvinceSelection->build();
-    ?>
-</form>
-
-    <?php
+    $selectProvinceSelection = new Select($provinceOptions);
+    $selectProvinceSelection->setName('listaProvincias');
+    $selectProvinceSelection->setOnChange('this.form.submit()');
+    $webContent->setContent($selectProvinceSelection->build(true));
+    $webContent->setContent('</form>');
 endif;
+
+// Seleccion de localidad.
 if (isset($_POST['seleccionProvincia']) === true && $_POST['seleccionProvincia'] === '1') :
     $province = $_POST['listaProvincias'];
     $curlCall->setUrl('https://www.el-tiempo.net/api/json/v2/provincias/'.$province.'/municipios');
     $allData = $curlCall->retrieveData();
-    ?>
-<h1>Seleccione una localidad</h1>
-<h3>Provincia: <?php echo $allData->provincia; ?></h3>
-<form action="#" method="POST">
-    <?php
+
+    $webContent->setTitle('El tiempo en '.$allData->provincia);
+    $webContent->setContent('<h1>Seleccione una localidad</h1>');
+    $webContent->setContent('<h3>Provincia: '.$allData->provincia.'</h3>');
+    $webContent->setContent('<form action="#" method="POST">');
+
     $hiddenCitySelection = new Hidden();
     $hiddenCitySelection->setName('seleccionLocalidad');
     $hiddenCitySelection->setValue('1');
-    $hiddenCitySelection->build();
+    $webContent->setContent($hiddenCitySelection->build(true));
+
     $hiddenProvinceSelected = new Hidden();
     $hiddenProvinceSelected->setName('selectedProvince');
     $hiddenProvinceSelected->setValue($province);
-    $hiddenProvinceSelected->build();
+    $webContent->setContent($hiddenProvinceSelected->build(true));
 
     $cityOptions = [];
     foreach ($allData as $k => $lineData) {
@@ -69,11 +70,10 @@ if (isset($_POST['seleccionProvincia']) === true && $_POST['seleccionProvincia']
     $selectCitySelection = new Select($cityOptions);
     $selectCitySelection->setName('listaLocalidades');
     $selectCitySelection->setOnChange('this.form.submit()');
-    $selectCitySelection->build();
-    ?>
-</form>
-    <?php
+    $webContent->setContent($selectCitySelection->build(true));
+    $webContent->setContent('</form>');
 endif;
+
 if (isset($_POST['listaLocalidades']) === true && $_POST['seleccionLocalidad'] === '1') :
     $city = $_POST['listaLocalidades'];
     $province = $_POST['selectedProvince'];
@@ -90,4 +90,5 @@ if (isset($_POST['listaLocalidades']) === true && $_POST['seleccionLocalidad'] =
         echo "<br>";
     }
 endif;
-?>
+
+$webContent->print();

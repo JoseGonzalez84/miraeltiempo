@@ -9,7 +9,7 @@ class Hidden extends Html {
 
     }
 
-    public function build(bool $print=true, bool $return=false)
+    public function build(bool $return=false)
     {
         $element = '<input type="hidden"';
 
@@ -27,9 +27,7 @@ class Hidden extends Html {
         if ($return === true) {
             return $element;
         } else {
-            if ($print === true) {
-                parent::print();
-            }
+            parent::print();
         }
     }
 
