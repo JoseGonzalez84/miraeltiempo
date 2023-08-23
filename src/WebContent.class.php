@@ -15,7 +15,7 @@ class WebContent
         return $this->_content;
     }
 
-    public function setContent(string $data)
+    public function setContent(mixed $data)
     {
         $this->_content[] = $data;
     }
@@ -46,8 +46,8 @@ class WebContent
         echo '</head>';
         echo '<body>';
 
-        foreach ($this->_content as $line) {
-            echo $line;
+        foreach ($this->getContent() as $line) {
+            print_r($line);
         }
 
         echo '</body>';

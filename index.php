@@ -79,15 +79,13 @@ if (isset($_POST['listaLocalidades']) === true && $_POST['seleccionLocalidad'] =
     $province = $_POST['selectedProvince'];
     $curlCall->setUrl('https://www.el-tiempo.net/api/json/v2/provincias/'.$province.'/municipios/'.$city);
     $allData = $curlCall->retrieveData();
-    ?>
-        <h1><?php echo $allData->metadescripcion ?></h1>
-    <?php
+    $webContent->setContent('<h1>'.$allData->metadescripcion.'</h1>');
     foreach ($allData as $k => $lineData) {
-        echo "<br>";
-        var_dump($k);
-        echo "<br>";
-        var_dump($lineData);
-        echo "<br>";
+        $webContent->setContent('<br>');
+        $webContent->setContent($k);
+        $webContent->setContent('<br>');
+        $webContent->setContent($lineData);
+        $webContent->setContent('<br>');
     }
 endif;
 
