@@ -4,11 +4,14 @@ require_once './src/Curl.class.php';
 require_once './src/WebContent.class.php';
 require_once './components/Hidden.class.php';
 require_once './components/Select.class.php';
+require_once './components/MenuControl.class.php';
 
+$menuControl = new MenuControl();
 $webContent = new WebContent('El tiempo');
 $curlCall = new Curl();
 $curlCall->setMethod('GET');
-
+// Se añade el menú.
+$webContent->setContent($menuControl->build());
 // Primera ventana.
 if (empty($_POST) === true) :
     $curlCall->setUrl('https://www.el-tiempo.net/api/json/v2/provincias');

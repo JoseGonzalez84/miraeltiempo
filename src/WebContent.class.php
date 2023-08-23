@@ -2,12 +2,11 @@
 
 class WebContent
 {
-    private array $_content;
-    private string $_title;
+    public function __construct(
+        private string $_title,
+        private array $_content=[]
+    ) {
 
-    public function __construct(string $title)
-    {
-        $this->_title = $title;
     }
 
     public function getContent()
@@ -43,14 +42,20 @@ class WebContent
         EOT;
 
         echo '<title>'.$this->getTitle().'</title>';
-        echo '</head>';
-        echo '<body>';
+        echo <<<'EOT'
+        </head>
+        <body>
+        <div class="container">
+        EOT;
 
         foreach ($this->getContent() as $line) {
             print_r($line);
         }
 
-        echo '</body>';
-        echo '</html>';
+        echo <<<'EOT'
+        </div>
+        </body>
+        </html>
+        EOT;
     }
 }
