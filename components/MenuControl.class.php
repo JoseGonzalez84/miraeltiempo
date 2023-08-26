@@ -14,8 +14,20 @@ class MenuControl extends Html
 
     }
 
-    public function getButtons() {
+    public function getButtons()
+    {
         return $this->_buttons;
+    }
+
+    public function printButtons()
+    {
+        $output = '';
+
+        foreach ($this->getButtons() as $button) {
+            $output .= $button;
+        }
+
+        return $output;
     }
 
     public function addButton(
@@ -23,20 +35,34 @@ class MenuControl extends Html
         string $type,
         string $url,
         string $icon='',
+        bool $post=false,
+        array $dataForSend=[],
     ) {
-        $output = '<a class="button is-'.$type.'" href="'.$url.'">';
+        if ($post === false) {
+            $output = '<a class="button is-'.$type.'" href="'.$url.'">';
+        } else {
+            $output = '<form method="POST" action="'.$url.'"><input type="submit" class="button is-'.$type.'">';
+            foreach ($dataForSend as $key => $value) {
+                $output .= '<input type="hidden" name="'.$key.'" value="'.$value.'" />';
+            }
+        }
 
         if (empty($icon) === false) {
-            $output .= '<span class="icon"><i class="fab '.$icon.'"></i></span>';
+            $output .= '<span class="icon"><i class="fa-solid fa-'.$icon.'"></i></span>';
         }
 
         $output .= '<span>'.$title.'</span>';
-        $output .= '</a>';
+        if ($post === false) {
+            $output .= '</a>';
+        } else {
+            $output .= '</button></form>';
+        }
 
         $this->_buttons[] = $output;
     }
 
-    public function build() {
+    public function build()
+    {
         $output = <<<'EOT'
             <nav class="navbar is-transparent">
                 <div class="navbar-brand">
@@ -55,22 +81,11 @@ class MenuControl extends Html
                     <div class="navbar-item">
                         <div class="field is-grouped">
                             <p class="control">
-                            <a class="bd-tw-button button" data-social-network="Twitter" data-social-action="tweet" data-social-target="https://bulma.io" target="_blank" href="https://twitter.com/intent/tweet?text=Bulma: a modern CSS framework based on Flexbox&amp;hashtags=bulmaio&amp;url=https://bulma.io&amp;via=jgthms">
-                                <span class="icon">
-                                <i class="fab fa-twitter"></i>
-                                </span>
-                                <span>
-                                Tweet
-                                </span>
-                            </a>
-                            </p>
-                            <p class="control">
-                            <a class="button is-primary" href="https://github.com/jgthms/bulma/releases/download/0.9.4/bulma-0.9.4.zip">
-                                <span class="icon">
-                                <i class="fas fa-download"></i>
-                                </span>
-                                <span>Download</span>
-                            </a>
+        EOT;
+
+        $output .= $this->printButtons();
+
+        $output .= <<<'EOT'
                             </p>
                         </div>
                     </div>

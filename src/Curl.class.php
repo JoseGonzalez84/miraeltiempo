@@ -3,7 +3,7 @@
 class Curl {
 
     private $_curlObject;
-    private $_apiKey = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb3NlZ3M4NEBnbWFpbC5jb20iLCJqdGkiOiI1MWRmN2IwOC0wMjEyLTQ4MGQtODA5NC01MGFhZDBkOTVjM2QiLCJpc3MiOiJBRU1FVCIsImlhdCI6MTY5MTYzMDQ2OCwidXNlcklkIjoiNTFkZjdiMDgtMDIxMi00ODBkLTgwOTQtNTBhYWQwZDk1YzNkIiwicm9sZSI6IiJ9.GlgNHkleTJcMXLQnM3c1PBLzjylnkwPmev2PQwVr4vc';
+    private $_apiKey = '';
 
     public function __construct(
         private array $headers=[],
@@ -43,7 +43,14 @@ class Curl {
                     $urlProcessed .= '&'.$key.'='.$value;
                 }
                 $this->url .= $urlProcessed;
-                $this->url .= $this->getApiKey();
+
+                $apiKey = $this->getApiKey();
+
+                // Set the api key.
+                if (empty($apiKey) === false) {
+                    $this->url .= '&api_key='.$apiKey;
+                }
+
                 curl_setopt($this->_curlObject, CURLOPT_CUSTOMREQUEST, $this->method);
             break;
         }

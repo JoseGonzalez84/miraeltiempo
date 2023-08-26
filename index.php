@@ -7,16 +7,17 @@ require_once './components/Select.class.php';
 require_once './components/MenuControl.class.php';
 
 $menuControl = new MenuControl();
+// Añadimos el boton de Inicio, siempre aparece.
+$menuControl->addButton('Inicio', 'primary', 'http://localhost/miraeltiempo/', 'house');
 $webContent = new WebContent('El tiempo');
 $curlCall = new Curl();
 $curlCall->setMethod('GET');
-// Se añade el menú.
-$webContent->setContent($menuControl->build());
 // Primera ventana.
 if (empty($_POST) === true) :
     $curlCall->setUrl('https://www.el-tiempo.net/api/json/v2/provincias');
     $allData = $curlCall->retrieveData();
 
+    $webContent->setContent($menuControl->build());
     $webContent->setContent('<h1>Seleccione una provincia</h1>');
     $webContent->setContent('<form action="#" method="POST">');
     $hiddenProvinceSelection = new Hidden();
@@ -46,6 +47,8 @@ if (isset($_POST['seleccionProvincia']) === true && $_POST['seleccionProvincia']
     $curlCall->setUrl('https://www.el-tiempo.net/api/json/v2/provincias/'.$province.'/municipios');
     $allData = $curlCall->retrieveData();
 
+    // Se añade el menú.
+    $webContent->setContent($menuControl->build());
     $webContent->setTitle('El tiempo en '.$allData->provincia);
     $webContent->setContent('<h1>Seleccione una localidad</h1>');
     $webContent->setContent('<h3>Provincia: '.$allData->provincia.'</h3>');
@@ -82,6 +85,20 @@ if (isset($_POST['listaLocalidades']) === true && $_POST['seleccionLocalidad'] =
     $province = $_POST['selectedProvince'];
     $curlCall->setUrl('https://www.el-tiempo.net/api/json/v2/provincias/'.$province.'/municipios/'.$city);
     $allData = $curlCall->retrieveData();
+
+    $menuControl->addButton(
+        'Volver atrás',
+        'link',
+        'http://localhost/miraeltiempo/',
+        'arrow-left',
+        true,
+        [
+            'seleccionProvincia' => '1',
+            'listaProvincias' => $province
+        ]
+    );
+
+    $webContent->setContent($menuControl->build());
     $webContent->setContent('<h1>'.$allData->metadescripcion.'</h1>');
     foreach ($allData as $k => $lineData) {
         $webContent->setContent('<br>');
