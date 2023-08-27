@@ -8,7 +8,15 @@ require_once './components/MenuControl.class.php';
 
 $menuControl = new MenuControl();
 // Añadimos el boton de Inicio, siempre aparece.
-$menuControl->addButton('Inicio', 'primary', 'http://localhost/miraeltiempo/', 'house');
+$startButton = new Button(
+    'Inicio',
+    'primary',
+    'http://localhost/miraeltiempo/',
+    'house'
+);
+$startButton->build();
+$menuControl->setButton($startButton);
+
 $webContent = new WebContent('El tiempo');
 $curlCall = new Curl();
 $curlCall->setMethod('GET');
@@ -86,17 +94,21 @@ if (isset($_POST['listaLocalidades']) === true && $_POST['seleccionLocalidad'] =
     $curlCall->setUrl('https://www.el-tiempo.net/api/json/v2/provincias/'.$province.'/municipios/'.$city);
     $allData = $curlCall->retrieveData();
 
-    $menuControl->addButton(
-        'Volver atrás',
-        'link',
-        'http://localhost/miraeltiempo/',
-        'arrow-left',
-        true,
+    $goBackButton = new Button();
+    $goBackButton->setTitle('Volver atrás');
+    $goBackButton->setType('link');
+    $goBackButton->setUrl('http://localhost/miraeltiempo/');
+    $goBackButton->setIcon('arrow-left');
+    $goBackButton->isPost(true);
+    $goBackButton->setDataForSend(
         [
-            'seleccionProvincia' => '1',
-            'listaProvincias' => $province
+        'seleccionProvincia' => '1',
+        'listaProvincias' => $province
         ]
     );
+
+    $goBackButton->build();
+    $menuControl->setButton($goBackButton);
 
     $webContent->setContent($menuControl->build());
     $webContent->setContent('<h1>'.$allData->metadescripcion.'</h1>');
